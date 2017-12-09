@@ -1,3 +1,5 @@
+# Run this after running the server.py program on the computer having the camera
+
 from socket import *
 import cv2
 import numpy as np
