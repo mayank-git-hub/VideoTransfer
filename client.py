@@ -7,29 +7,31 @@ import io
 from PIL import Image
 
 
-addr = (config.receiver_ip, config.receiver_port)
-UDPSock = socket(AF_INET, SOCK_DGRAM)
+def client():
 
-buf = 50
-addr_recv = (config.sender_ip, config.sender_port)
-UDPSock_recv = socket(AF_INET, SOCK_DGRAM)
-UDPSock_recv.bind(addr_recv)
+    addr = (config.receiver_ip, config.receiver_port)
+    udp_sock = socket(AF_INET, SOCK_DGRAM)
 
-cap = cv2.VideoCapture(0)
+    buf = 50
+    addr_recv = (config.sender_ip, config.sender_port)
+    udp_sock_recv = socket(AF_INET, SOCK_DGRAM)
+    udp_sock_recv.bind(addr_recv)
 
-while True:
+    cap = cv2.VideoCapture(0)
 
-    ret, frame = cap.read()
+    while True:
 
-    # Converting image to JPEG format to save bandwidth
+        ret, frame = cap.read()
 
-    pil_frame = Image.fromarray(frame)
-    tmpFile = io.BytesIO()
-    pil_frame.save(tmpFile, format="jpeg")
-    png_buffer = tmpFile.getvalue()
+        # Converting image to JPEG format to save bandwidth
 
-    UDPSock.sendto(str(len(png_buffer)).encode(), addr)
-    UDPSock_recv.recvfrom(buf)
+        pil_frame = Image.fromarray(frame)
+        tmp_file = io.BytesIO()
+        pil_frame.save(tmp_file, format="jpeg")
+        png_buffer = tmp_file.getvalue()
 
-    UDPSock.sendto(png_buffer, addr)
-    UDPSock_recv.recvfrom(buf)
+        udp_sock.sendto(str(len(png_buffer)).encode(), addr)
+        udp_sock_recv.recvfrom(buf)
+
+        udp_sock.sendto(png_buffer, addr)
+        udp_sock_recv.recvfrom(buf)
