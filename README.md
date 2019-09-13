@@ -24,4 +24,4 @@ It was done in python as it is user friendly for images.
 The file client.py should be run on the system having the camera and the server should be run where you want the video to be sent.
 There is currently a bug now which will be fixed as soon as possible, but it is a small bug. The bug is that you must run the server code before running the client code. At least this bug is present when the client code is run in windows and the server on ubuntu.
 
-Don't forget to change the IP address in the client and the server code.
+Don't forget to change the IP address in the config.py
