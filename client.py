@@ -3,11 +3,12 @@
 from socket import *
 import cv2
 import config
+import io
+from PIL import Image
 
 
 addr = (config.receiver_ip, config.receiver_port)
 UDPSock = socket(AF_INET, SOCK_DGRAM)
-no_packet = 50
 
 buf = 50
 addr_recv = (config.sender_ip, config.sender_port)
@@ -19,9 +20,16 @@ cap = cv2.VideoCapture(0)
 while True:
 
     ret, frame = cap.read()
-    r = frame.reshape(480*640*3)
 
-    for i in range(no_packet):
-        UDPSock.sendto(r[i*r.shape[0]//no_packet:(i+1)*r.shape[0]//no_packet].tostring(), addr)
+    # Converting image to JPEG format to save bandwidth
 
-    ack, add = UDPSock_recv.recvfrom(buf)
+    pil_frame = Image.fromarray(frame)
+    tmpFile = io.BytesIO()
+    pil_frame.save(tmpFile, format="jpeg")
+    png_buffer = tmpFile.getvalue()
+
+    UDPSock.sendto(str(len(png_buffer)).encode(), addr)
+    UDPSock_recv.recvfrom(buf)
+
+    UDPSock.sendto(png_buffer, addr)
+    UDPSock_recv.recvfrom(buf)
