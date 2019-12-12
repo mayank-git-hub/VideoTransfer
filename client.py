@@ -7,17 +7,16 @@ import io
 from PIL import Image
 
 
-def client():
+def client(video):
 
     addr = (config.receiver_ip, config.receiver_port)
-    udp_sock = socket(AF_INET, SOCK_DGRAM)
+    tcp_sock = socket(AF_INET, SOCK_STREAM)
 
     buf = 50
-    addr_recv = (config.sender_ip, config.sender_port)
-    udp_sock_recv = socket(AF_INET, SOCK_DGRAM)
-    udp_sock_recv.bind(addr_recv)
 
-    cap = cv2.VideoCapture(0)
+    cap = cv2.VideoCapture(video)
+
+    tcp_sock.connect(addr)
 
     while True:
 
@@ -30,8 +29,8 @@ def client():
         pil_frame.save(tmp_file, format="jpeg")
         png_buffer = tmp_file.getvalue()
 
-        udp_sock.sendto(str(len(png_buffer)).encode(), addr)
-        udp_sock_recv.recvfrom(buf)
+        tcp_sock.send(str(len(png_buffer)).encode())
+        tcp_sock.recv(buf)
 
-        udp_sock.sendto(png_buffer, addr)
-        udp_sock_recv.recvfrom(buf)
+        tcp_sock.send(png_buffer)
+        tcp_sock.recv(buf)

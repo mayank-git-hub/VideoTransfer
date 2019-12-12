@@ -17,7 +17,8 @@ def server():
 def client():
 
 	from client import client
-	client()
+	video = 'video.mp4'
+	client(video)
 
 
 if __name__ == "__main__":
